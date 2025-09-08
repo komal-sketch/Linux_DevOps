@@ -40,13 +40,30 @@ Linux can be installed in different ways:
 ---
 
 ## 📌 3. How to Download & Install Linux (Ubuntu) on a Windows PC?
-1. Download **Ubuntu ISO** from [Ubuntu official site](https://ubuntu.com/download).  
-2. Create a **bootable USB drive** using tools like **Rufus**.  
-3. Restart your PC and boot from the USB.  
-4. Choose **Install Ubuntu** and follow on-screen instructions.  
-5. Select installation type: dual boot (with Windows) or erase disk (Linux only).  
+There are multiple ways to run Ubuntu on a Windows system without fully replacing Windows.
+Here are the recommended methods:
 
----
+1. WSL (Windows Subsystem for Linux)
+•	Run Linux directly inside Windows without a virtual machine.
+•	Install Ubuntu easily from the Microsoft Store.
+•	Best for developers who want Linux tools alongside Windows apps.
+•	Quick setup:
+                wsl --install
+
+2. VirtualBox
+•	Install Oracle VirtualBox and create a virtual machine (VM).
+•	Let you run Ubuntu as a guest OS inside Windows.
+•	Great for safe learning, testing, and experimenting with Linux.
+
+3. Cloud Platforms (AWS, Azure, GCP)
+•	Create and run Ubuntu servers on cloud providers like AWS EC2, Azure VM, or Google Cloud Compute Engine.
+•	Ideal for practicing Linux server administration and DevOps.
+•	Offers real-world server experience.
+
+4. Vagrant
+•	A developer-friendly tool to set up and manage Linux environments quickly.
+•	Works with VirtualBox, VMware, and other VM providers.
+
 
 ## 📌 4. Difference Between Linux and Windows  
 
@@ -65,15 +82,17 @@ Linux provides several tools to **remotely connect and manage servers**:
 - **SSH (Secure Shell)** → Connect to servers securely.  
 - **Telnet** → Legacy tool (not secure).  
 - **VNC / RDP** → Remote desktop access.  
-- **SCP / SFTP** → File transfer between systems.  
+- **SCP / SFTP** → File transfer between systems.
+- **AnyDesk** → Free for personal use, paid plans for businesses.
 
 ---
 
 ## 📌 6. What are Kernel, Bootloader, and Shell?
 - **Kernel** → The core of the OS that manages hardware and system resources.  
-- **Bootloader** → The program that loads the OS when the system starts.  
-- **Shell** → Interface between the user and the OS (e.g., Bash).  
-
+- **Bootloader** → The program that loads the OS when the system starts. 
+                  ( GRUB (Grand Unified Bootloader) is a widely used boot loader in the Linux® world. It's the initial program that kicks into action when you power on your computer, responsible for loading the operating system kernel into memory. )
+- **Shell** → Interface between the user and the OS (e.g., Bash). 
+                        
 ---
 
 ## 📌 7. Desktop Environment
@@ -93,6 +112,7 @@ Linux is structured in layers:
 3. **System Libraries** → Provide functions for applications.  
 4. **System Utilities** → Core commands (cp, mv, ls, etc.).  
 5. **User Applications** → Software installed by users.  
+                        ![alt text](image.png)
 
 ---
 
@@ -108,12 +128,7 @@ Linux provides commands to check system hardware:
 
 ## 📌 10. Linux File System
 - Linux uses a **hierarchical file system** starting with the root (`/`).  
-- Important directories:  
-  - `/home` → User files.  
-  - `/etc` → Configuration files.  
-  - `/bin` → Essential binaries.  
-  - `/var` → Logs and temporary files.  
-  - `/root` → Root user home directory.  
+![alt text](image-1.png)
 
 ---
 
