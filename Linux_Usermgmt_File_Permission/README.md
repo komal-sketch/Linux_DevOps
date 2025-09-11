@@ -9,6 +9,7 @@ This file is a categorized reference of common Linux commands, user management, 
 - rm -rf dir_name : Remove a directory and all its contents recursively and forcefully. **Be very careful with this command!**
 
 - cat /etc/passwd : Display user account information stored in the system.
+- cat /etc/group
 
 - zip -r <name>.zip <directory_name> :  Compress a directory into a zip file recursively.
 
@@ -41,10 +42,8 @@ This file is a categorized reference of common Linux commands, user management, 
 
 ## 3. User and Group Management:
 
-- Add a new user:  
-                  sudo useradd -m Sameer
-                  sudo passwd Sameer
-
+- Add a new user:  sudo useradd -m Sameer
+- To give password:  sudo passwd Sameer
 - Delete a user: sudo userdel Jack
 - Add a new group: sudo groupadd devops and check groups: cat /etc/group
 - Add user to group: sudo gpasswd -a Sameer devops
