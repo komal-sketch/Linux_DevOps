@@ -1,4 +1,4 @@
-                                                                    # Linux Commands Reference
+                                                           # Linux Commands Reference
 
 This file is a categorized reference of common Linux commands, user management, file permissions, package management, and file operations.
 
