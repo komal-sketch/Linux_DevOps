@@ -1,4 +1,4 @@
-                                                                    # Linux Commands Reference
+                                                           # Linux Commands Reference
 
 This file is a categorized reference of common Linux commands, user management, file permissions, package management, and file operations.
 
@@ -9,6 +9,7 @@ This file is a categorized reference of common Linux commands, user management, 
 - rm -rf dir_name : Remove a directory and all its contents recursively and forcefully. **Be very careful with this command!**
 
 - cat /etc/passwd : Display user account information stored in the system.
+- cat /etc/group
 
 - zip -r <name>.zip <directory_name> :  Compress a directory into a zip file recursively.
 
@@ -41,25 +42,32 @@ This file is a categorized reference of common Linux commands, user management, 
 
 ## 3. User and Group Management:
 
-- Add a new user:  
-                  sudo useradd -m Sameer
-                  sudo passwd Sameer
+•	Add a new user:  sudo useradd -m Sameer
 
-- Delete a user: sudo userdel Jack
-- Add a new group: sudo groupadd devops and check groups: cat /etc/group
-- Add user to group: sudo gpasswd -a Sameer devops
-- Set multiple users in a group: sudo gpasswd -M Sameer,Jack,Ryan,Rehana devops
-- Delete a group: sudo groupdel devops
+•	To give password:  sudo passwd Sameer
+
+•	Delete a user: sudo userdel Jack
+
+•	Add a new group: sudo groupadd devops and check groups: cat /etc/group
+
+•	Add user to group: sudo gpasswd -a Sameer devops
+
+•	Set multiple users in a group: sudo gpasswd -M Sameer,Jack,Ryan,Rehana devops
+
+•	Delete a group: sudo groupdel devops
 
 
 ## 4. File Permissions and Ownership:
 
-sudo chmod 400 file_name
-sudo chown new_owner_name file_name
-sudo chgrp grp_name file_name
+•	sudo chmod 400 file_name
 
-umask : Display default file creation permissions.
-cat .bashrc : View user shell configuration file.
+•	sudo chown new_owner_name file_name
+
+•	sudo chgrp grp_name file_name
+
+•	umask : Display default file creation permissions.
+
+•	cat .bashrc : View user shell configuration file.
 
 
 ## 5. Remote File Transfer:
