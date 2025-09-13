@@ -1,258 +1,117 @@
-                                               # Linux Text‑Processing Commands for DevOps Engineers
+# Linux Text-Processing Tools for DevOps
+
+## Table of Contents
+
+1. [Why Text-Processing Matters](#why-text-processing-matters)
+2. [AWK](#awk)
+   - [Commands, Descriptions, and Use Cases](#commands-descriptions-and-use-cases)
+   - [Use Cases for DevOps](#use-cases-for-devops)
+3. [SED](#sed)
+   - [Commands, Descriptions, and Use Cases](#commands-descriptions-and-use-cases-1)
+   - [Use Cases for DevOps](#use-cases-for-devops-1)
+4. [Other Useful Commands](#other-useful-commands)
+5. [Differences Between AWK and SED](#differences-between-awk-and-sed)
+6. [Summary of grep, sed, and awk Use Cases for DevOps](#summary-of-grep-sed-and-awk-use-cases-for-devops)
+7. [Conclusion](#conclusion)
+8. [License](#license)
 
-Efficient log analysis and configuration management are essential in DevOps. This guide groups common text‑processing commands — grep, sed, awk and complementary tools — into logical sections with short explanations and examples. Use it as a quick reference when investigating logs, transforming files or automating one‑liners.
+## Why Text-Processing Matters
 
-# Table of Contents
+DevOps engineers often need to filter logs, extract fields from structured text, and perform one-off transformations. The `grep` tool searches for patterns and prints matching lines. The GNU manual notes that `grep` reads one or more files and prints each line that matches a pattern ([man7.org](https://man7.org)). This makes it ideal for quickly checking whether an error string appears in a log.
 
-Quick Start / Cheatsheet
+The `sed` stream editor goes further by performing in-place substitutions and other text transformations ([man7.org](https://man7.org)). `awk` is a full-fledged programming language for processing delimited fields. The POSIX manual states that `awk` executes programs specialized for textual data manipulation and acts on lines and fields ([man7.org](https://man7.org)).
 
-Install the Tooling (Ubuntu/Debian)
+Because each tool has different strengths — `grep` for simple matching, `sed` for stream editing, and `awk` for field-based scripting — understanding when and how to use them is essential. The following examples show how a DevOps engineer can leverage these commands when working with a log file named `app.log`.
 
-Pattern Matching & Filtering
+## AWK
 
-Search & Replace (sed)
+`awk` operates on input records (by default each line) and splits them into fields separated by whitespace. Patterns and actions can be specified so that only lines matching a pattern are processed. This makes `awk` ideal for extracting columns and creating summaries.
 
-Field Extraction & Reports (awk)
+### Commands, Descriptions, and Use Cases
 
-Viewing & Summarising Files
+| Command                                               | Description & Use Case                                                                                   |
+|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| `awk '{print}' app.log`                               | Print every line; useful for verifying that `awk` can read the file before applying filters.              |
+| `awk '{print $1, $2}' app.log`                        | Print the first two fields (e.g., timestamp and log level) for each line.                                 |
+| `awk '{print $1, $2, $5}' app.log`                    | Extract columns 1, 2, and 5 — helpful when logs contain message codes in specific positions.              |
+| `awk '/INFO/ {print $1, $2, $5}' app.log`             | Only process lines containing the string INFO and show selected fields; useful for extracting informational messages. |
+| `awk '/DEBUG/ {print $1, $2, $3, $5}' app.log`        | Same as above but for debug logs; can filter verbose output when troubleshooting.                         |
+| `awk '/INFO/ {count++} END {print count}' app.log`     | Count the number of info messages; useful for quick statistics.                                          |
+| `awk '/INFO/ {count++} END {print "Count of INFO:", count}' app.log` | Similar to previous but prints a label with the count. |
+| `awk '$2 >= "07:51:54" && $2 <= "07:52:01" {print $2,$3,$4}' app.log` | Filter log entries within a specific time range based on the second field (time); helps isolate events around an incident. |
+| `awk 'NR >=2 && NR <=10 {print NR}' app.log`          | Print the line numbers from record 2 to 10; useful for examining a specific portion of a log.            |
 
-Disk & Process Tools
+### Use Cases for DevOps
 
-Safety Notes
+- **Log Summarisation** – Count occurrences of errors or warnings by incrementing counters within an `END` block.
+- **Parsing Configuration Files** – Extract key/value pairs or specific columns from CSV/TSV data.
+- **On-the-Fly Reporting** – Generate quick reports with calculated fields (e.g., average response time) by performing arithmetic on fields.
+- **Data Transformation** – Reformat logs before sending to monitoring tools by printing selected fields or changing delimiters.
 
-Frequently Used One‑Liners
+## SED
 
-Quick Start / Cheatsheet
+`sed` is a non-interactive stream editor used to perform substitutions, insertions, and deletions on text streams. It reads the input line by line, applies commands, and writes the result to standard output.
 
-The following examples assume a log file named app.log. Adjust file names and patterns as needed.
+### Commands, Descriptions, and Use Cases
 
-# Show lines containing ERROR
+| Command                                               | Description & Use Case                                                                                   |
+|-------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| `sed -n '/INFO/p' app.log`                            | Print only lines containing INFO. The `-n` option suppresses the default printing, and the `p` command prints matches. This can be used as a `grep` replacement when further editing is required. |
+| `sed 's/INFO/LOG/g' app.log`                          | Replace all occurrences of INFO with LOG on every line; useful for normalizing log levels before feeding them into an aggregator. |
+| `sed -n -e '/INFO/=' app.log`                         | Show the line numbers of lines containing INFO. The `=` command prints the current line number when a match is found. |
+| `sed -n -e '/INFO/=' -e '/INFO/p' app.log`            | Print the line number and the line itself for each INFO match.                                            |
+| `sed '1,10 s/INFO/LOG/g' app.log`                     | Perform the substitution only on lines 1–10; helps test changes on a subset of data.                      |
+| `sed '1,10 s/INFO/LOG/g; 1,10p; 11q' app.log`         | Substitute and print the first ten lines, then quit (`q`) at line 11. This is useful for previewing changes without reading the entire file. |
 
-grep 'ERROR' app.log
+### Use Cases for DevOps
 
-# Show lines not containing DEBUG
+- **Inline Edits in Configuration Files** – Update configuration parameters across multiple lines using range addresses and the `-i` option (with backups).
+- **Format Transformation** – Remove, replace, or insert text (e.g., converting date formats, updating log prefixes) before ingestion into monitoring systems.
+- **Quick Pattern Filtering** – Similar to `grep` but with extra context; for example, printing line numbers or restricting edits to a given range.
 
-grep -v 'DEBUG' app.log
+## Other Useful Commands
 
-# Replace INFO with LOG everywhere
+| Command                          | Description & Use Case                                                                                   |
+|----------------------------------|----------------------------------------------------------------------------------------------------------|
+| `head -n 5 app.log`              | Display the first five lines; useful for checking the beginning of a log or file header.                 |
+| `tail -n 10 app.log`             | Display the last ten lines; often used to see the most recent log entries.                               |
+| `tail -f app.log`                | Continuously stream appended lines; ideal for real-time monitoring of logs during deployments.            |
+| `sort app.log | uniq -c`         | Sort and count unique lines; this combination helps identify how many times each identical log line occurs. |
+| `cut -d' ' -f1 app.log`          | Use whitespace as the delimiter and extract the first field; helpful for pulling timestamps or hostnames. |
+| `df -h`                          | Report disk usage in human-readable units. DevOps teams monitor disk consumption to avoid outages.       |
+| `du -sh /var/log`                | Show the total size of the `/var/log` directory; helps estimate log storage consumption.                |
+| `top`                            | Display real-time system resource usage (CPU, memory, load). Useful for diagnosing performance problems. |
 
-sed 's/INFO/LOG/g' app.log
+## Differences Between AWK and SED
 
-# Extract timestamp and level (fields 1 & 2)
+Both `awk` and `sed` can filter and transform text, but they excel at different tasks. The table below highlights key distinctions.
 
-awk '{print $1, $2}' app.log
+| Aspect             | AWK                                              | SED                                              |
+|--------------------|--------------------------------------------------|--------------------------------------------------|
+| Purpose            | Field-oriented pattern scanning and processing language | Stream editor for filtering and transforming text |
+| Input Handling     | Treats each line as a record and splits it into fields; fields are accessed via `$1`, `$2`, etc. | Operates on a continuous stream of characters; pattern space contains the current line, and operations can be restricted by line numbers or patterns |
+| Capabilities       | Supports arithmetic, conditionals, loops, and functions; can perform summarization and complex reports | Provides substitution (`s`), deletion (`d`), insertion, and line printing (`p`); works well for simple find-and-replace or line-based edits |
+| Typical Use        | Extract or manipulate columns, perform calculations, generate structured reports | Substitute patterns, insert or delete lines, apply bulk edits across a file |
+| Learning Curve     | Requires understanding of scripting constructs but offers more power | Easier to learn for basic substitutions and line filtering |
 
-# Count number of WARNING lines
+## Summary of `grep`, `sed`, and `awk` Use Cases for DevOps
 
-awk '/WARNING/ {c++} END {print c}' app.log
+| Tool | Core Capability                              | DevOps Use Case Examples                                                                      |
+|------|----------------------------------------------|----------------------------------------------------------------------------------------------|
+| `grep` | Pattern matching; prints lines that match a regex | Quickly check if errors or keywords exist in logs (`grep "ERROR" app.log`), invert matches to exclude noisy messages (`grep -v "DEBUG" app.log`), or display surrounding context with `-A`/`-B` options. |
+| `sed`  | Stream editing — search, substitution and deletion | Perform batch updates in configuration files, normalize log entries by replacing patterns, extract line numbers, or restrict edits to certain lines. |
+| `awk`  | Field-oriented text processing with scripting capabilities | Parse log fields (timestamps, levels), aggregate counts, calculate statistics, or reformat text for ingestion into dashboards. |
 
-# Follow the last 20 lines of a growing log
+---
 
-tail -f app.log | tail -n 20
+## Conclusion
 
-Install the Tooling (Ubuntu/Debian)
+Text-processing tools such as `grep`, `sed`, and `awk` are indispensable in a DevOps engineer's toolkit. By mastering these utilities, DevOps teams can automate error handling, log analysis, and system monitoring to keep applications and services running smoothly.
 
-These utilities are usually installed by default. If you need to install or update them, run:
+---
 
-sudo apt update
-sudo apt install -y gawk sed grep coreutils
+## License
 
+MIT License
 
-This installs GNU awk (gawk), sed, grep and the standard core utilities containing head, tail, sort, uniq and cut.
 
-Pattern Matching & Filtering
-grep
-
-What: Scan files or streams for lines matching a regular expression and print them
-man7.org
-. It’s the go‑to tool when you need to quickly find patterns or exclude noise
-baeldung.com
-.
-
-# Find all lines containing ERROR
-grep 'ERROR' app.log
-
-# Find lines matching a regex (case insensitive)
-grep -i 'failed\|timeout' app.log
-
-# Show 3 lines of context around each match
-grep -C 3 'CRITICAL' app.log
-
-# Exclude INFO lines (invert match)
-grep -v 'INFO' app.log
-
-awk as a filter
-
-Awk is a full scripting language but can imitate grep by specifying only a pattern
-baeldung.com
-:
-
-# Print lines containing ERROR (equivalent to grep)
-awk '/ERROR/ {print}' app.log
-
-sed as a filter
-
-Sed can also act like grep by printing only matching lines
-baeldung.com
-:
-
-# Print lines containing ERROR
-sed -n '/ERROR/p' app.log
-
-
-Use grep when you only need to match; use sed or awk when you plan to transform the output further.
-
-Search & Replace (sed)
-
-sed is a non‑interactive stream editor used for filtering and transforming text
-man7.org
-. It processes lines sequentially and applies editing commands to matching lines or ranges.
-baeldung.com
-
-Basic substitution
-# Replace INFO with LOG globally on each line
-sed 's/INFO/LOG/g' app.log
-
-# Replace first occurrence of WARNING with WARN on each line
-sed 's/WARNING/WARN/' app.log
-
-Conditional substitution
-# Replace INFO with LOG only on lines 1‑10
-sed '1,10 s/INFO/LOG/g' app.log
-
-# Replace ERROR with CRITICAL on lines containing ERROR
-sed '/ERROR/ s/ERROR/CRITICAL/g' app.log
-
-Display line numbers
-# Print the line number of each INFO match
-sed -n '/INFO/=' app.log
-
-# Show line number and content together
-sed -n -e '/INFO/=' -e '/INFO/p' app.log
-
-
-Sed can also delete lines (d), insert or append text (i/a) and quit early (q). Use it to perform batch edits on configuration files or logs.
-
-Field Extraction & Reports (awk)
-
-awk reads records (usually lines), splits them into fields and executes actions when patterns match
-man7.org
-. Fields are referenced as $1, $2, …
-man7.org
-.
-
-Printing columns
-# Print entire line (same as cat)
-awk '{print}' app.log
-
-# Print first two fields (timestamp and level)
-awk '{print $1, $2}' app.log
-
-# Print fields 1, 2 and 5
-awk '{print $1, $2, $5}' app.log
-
-Filtering by content
-# Show INFO messages (fields 1, 2, 5)
-awk '/INFO/ {print $1, $2, $5}' app.log
-
-# Show DEBUG messages (fields 1‑3 and 5)
-awk '/DEBUG/ {print $1, $2, $3, $5}' app.log
-
-Counting and summarising
-# Count number of INFO lines
-awk '/INFO/ {c++} END {print c}' app.log
-
-# Count and label the result
-awk '/INFO/ {c++} END {print "Count of INFO:", c}' app.log
-
-# Summarise occurrences by log level (assumes level in field 2)
-awk '{count[$2]++} END {for (level in count) printf "%s\t%s\n", level, count[level]}' app.log
-
-Conditional selection
-# Select lines where field 2 (time) is between 07:51:54 and 07:52:01
-awk '$2 >= "07:51:54" && $2 <= "07:52:01" {print $0}' app.log
-
-# Print line numbers for records 2 through 10
-awk 'NR>=2 && NR<=10 {print NR, $0}' app.log
-
-
-Use awk for structured log files (CSV/TSV) where you need to extract columns, compute aggregates or reformat data on the fly.
-
-Viewing & Summarising Files
-head & tail
-head -n 5 app.log    # first 5 lines
-tail -n 10 app.log    # last 10 lines
-tail -f app.log       # follow a growing log file in real time
-
-sort, uniq & cut
-# Sort and count identical lines
-sort app.log | uniq -c
-
-# Extract first field (space‑delimited)
-cut -d' ' -f1 app.log
-
-# Extract second field using a comma delimiter
-cut -d',' -f2 data.csv
-
-
-These commands let you detect repeated errors (sort | uniq), extract timestamps or hostnames (cut), and summarise logs quickly.
-
-Disk & Process Tools
-
-Text‑processing often goes hand‑in‑hand with checking system health. These commands come from the coreutils package.
-
-df -h            # human‑readable disk usage
-du -sh /var/log  # size of the log directory
-top              # real‑time CPU and memory usage
-
-
-Use them to ensure that logs aren’t filling disks and to diagnose resource bottlenecks.
-
-Safety Notes
-
-When editing files in place with sed -i, always create a backup (-i.bak) to avoid data loss.
-
-Regular expressions can be greedy; test them on a copy of your data before running destructive operations.
-
-Long‑running commands (tail -f, awk loops) may consume resources; stop them when they are no longer needed.
-
-Frequently Used One‑Liners
-# Find number of distinct IP addresses in logs (assuming IP in field 3)
-awk '{print $3}' app.log | sort | uniq | wc -l
-
-# Show top 5 most common error messages
-grep 'ERROR' app.log | sort | uniq -c | sort -nr | head -n 5
-
-# Remove ANSI colour codes from log
-sed -r 's/\x1B\[[0-9;]*[mK]//g' coloured.log
-
-# Monitor when a specific pattern appears (prints timestamp and message)
-tail -f app.log | awk '/CRITICAL/ {print strftime("%F %T"), $0}'
-
-
-| aspect             | awk                                                                                                   | sed                                                                                                                                                  |
-| ------------------ | ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Purpose**        | Field‑oriented pattern scanning and processing language                                               | Stream editor for filtering and transforming text                                                                                                    |
-| **Input handling** | Treats each line as a record and splits it into fields; fields are accessed via `$1`, `$2`, etc.      | Operates on a continuous stream of characters; pattern space contains the current line, and operations can be restricted by line numbers or patterns |
-| **Capabilities**   | Supports arithmetic, conditionals, loops and functions; can perform summarisation and complex reports | Provides substitution (`s`), deletion (`d`), insertion and line printing (`p`); works well for simple find‑and‑replace or line‑based edits           |
-| **Typical use**    | Extract or manipulate columns, perform calculations, generate structured reports                      | Substitute patterns, insert or delete lines, apply bulk edits across a file                                                                          |
-| **Learning curve** | Requires understanding of scripting constructs but offers more power                                  | Easier to learn for basic substitutions and line filtering                                                                                           |
-
-
-| tool     | core capability                                            | DevOps use case examples                                                                                                                                                                                 |
-| -------- | ---------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **grep** | Pattern matching; prints lines that match a regex          | Quickly check if errors or keywords exist in logs (`grep "ERROR" app.log`), invert matches to exclude noisy messages (`grep -v "DEBUG" app.log`), or display surrounding context with `-A`/`-B` options. |
-| **sed**  | Stream editing — search, substitution and deletion         | Perform batch updates in configuration files, normalize log entries by replacing patterns, extract line numbers or restrict edits to certain lines.                                                      |
-| **awk**  | Field‑oriented text processing with scripting capabilities | Parse log fields (timestamps, levels), aggregate counts, calculate statistics, or reformat text for ingestion into dashboards.                                                                           |
-
-
-| command                   | description & use case                                                                                      |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| `head -n 5 app.log`       | Display the first five lines; useful for checking the beginning of a log or file header.                    |
-| `tail -n 10 app.log`      | Display the last ten lines; often used to see the most recent log entries.                                  |
-| `tail -f app.log`         | Continuously stream appended lines; ideal for real‑time monitoring of logs during deployments.              |
-| `sort app.log \| uniq -c` | Sort and count unique lines; this combination helps identify how many times each identical log line occurs. |
-| `cut -d' ' -f1 app.log`   | Use whitespace as the delimiter and extract the first field; helpful for pulling timestamps or hostnames.   |
-| `df -h`                   | Report disk usage in human‑readable units.  DevOps teams monitor disk consumption to avoid outages.         |
-| `du -sh /var/log`         | Show the total size of the `/var/log` directory; helps estimate log storage consumption.                    |
-| `top`                     | Display real‑time system resource usage (CPU, memory, load).  Useful for diagnosing performance problems.   |
