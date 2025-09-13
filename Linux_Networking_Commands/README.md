@@ -1,6 +1,5 @@
                                                 # Linux Networking Commands for DevOps Engineers
 
-A practical, copy‑paste‑friendly README for day‑to‑day diagnostics, incident response, and environment validation. Wherever a command is legacy, a modern alternative is noted.
 
 ---
 
