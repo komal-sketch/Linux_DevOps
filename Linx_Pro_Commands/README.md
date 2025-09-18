@@ -1,3 +1,4 @@
+
 # Linux Text-Processing Tools for DevOps
 
 ## Table of Contents
@@ -17,9 +18,9 @@
 
 ## Why Text-Processing Matters
 
-DevOps engineers often need to filter logs, extract fields from structured text, and perform one-off transformations. The `grep` tool searches for patterns and prints matching lines. The GNU manual notes that `grep` reads one or more files and prints each line that matches a pattern ([man7.org](https://man7.org)). This makes it ideal for quickly checking whether an error string appears in a log.
+DevOps engineers often need to filter logs, extract fields from structured text, and perform one-off transformations. The `grep` tool searches for patterns and prints matching lines. The GNU manual notes that `grep` reads one or more files and prints each line that matches a pattern. This makes it ideal for quickly checking whether an error string appears in a log.
 
-The `sed` stream editor goes further by performing in-place substitutions and other text transformations ([man7.org](https://man7.org)). `awk` is a full-fledged programming language for processing delimited fields. The POSIX manual states that `awk` executes programs specialized for textual data manipulation and acts on lines and fields ([man7.org](https://man7.org)).
+The `sed` stream editor goes further by performing in-place substitutions and other text transformations. `awk` is a full-fledged programming language for processing delimited fields. The POSIX manual states that `awk` executes programs specialized for textual data manipulation and acts on lines and fields.
 
 Because each tool has different strengths — `grep` for simple matching, `sed` for stream editing, and `awk` for field-based scripting — understanding when and how to use them is essential. The following examples show how a DevOps engineer can leverage these commands when working with a log file named `app.log`.
 
@@ -113,5 +114,6 @@ Text-processing tools such as `grep`, `sed`, and `awk` are indispensable in a De
 ## License
 
 MIT License
+
 
 
