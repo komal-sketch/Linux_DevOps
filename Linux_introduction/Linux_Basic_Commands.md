@@ -1,7 +1,6 @@
 # Linux Command Reference Guide
 
 This guide helps you quickly find essential Linux commands, categorized for convenience. Whether you're a beginner or an advanced user, this quick reference assists in managing files, navigating the system, and monitoring processes with ease.  
-_All commands are shown as indented plain text._
 
 ---
 
@@ -187,3 +186,4 @@ Keeps a command running after logout; output goes to `nohup.out` by default.
     vmstat -s                                       # System summary
 
 ---
+
